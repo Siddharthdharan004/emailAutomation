@@ -1,0 +1,58 @@
+[
+    {
+        "prompt": "Send a professional follow-up email after a meeting.",
+        "email_body": "Subject: Thank You for the Meeting\n\nDear [Recipient],\n\nThank you for taking the time to meet with me today. I found our discussion about [specific topic] very insightful. Please let me know if there's anything I can provide to assist with next steps. I look forward to collaborating further.\n\nBest regards,\n[Your Name]"
+    },
+    {
+        "prompt": "Draft a formal invitation for a team-building activity.",
+        "email_body": "Subject: Invitation to Team-Building Activity\n\nDear Team,\n\nWe are excited to invite you to our upcoming team-building activity on [date] at [location]. This event will be a great opportunity to strengthen our bonds and have fun together. Please RSVP by [deadline]. Looking forward to seeing you there!\n\nWarm regards,\n[Your Name]"
+    },
+    {
+        "prompt": "Write a request for project status updates from team members.",
+        "email_body": "Subject: Request for Project Status Updates\n\nDear Team,\n\nI hope this email finds you well. As we approach the [specific milestone], I kindly request everyone to provide an update on your respective tasks by [date]. Let me know if you face any blockers or need assistance.\n\nBest regards,\n[Your Name]"
+    },
+    {
+        "prompt": "Compose an email to announce a new product launch to stakeholders.",
+        "email_body": "Subject: Exciting Announcement: New Product Launch\n\nDear Stakeholders,\n\nWe are thrilled to announce the launch of our new product, [Product Name], on [date]. This innovation represents a significant milestone for our company, and we are eager to share it with you. Please join us for the launch event at [location].\n\nSincerely,\n[Your Name]"
+    },
+    {
+        "prompt": "Create a thank-you email for a job interview.",
+        "email_body": "Subject: Thank You for the Opportunity\n\nDear [Interviewer],\n\nThank you for the opportunity to interview for the [position] role. I appreciated our discussion about [specific topics]. Please let me know if you need any additional information from my side.\n\nKind regards,\n[Your Name]"
+    },
+    {
+        "prompt": "Draft a reminder email for a pending invoice.",
+        "email_body": "Subject: Reminder: Pending Invoice\n\nDear [Client],\n\nI hope this email finds you well. This is a friendly reminder that invoice #[Invoice Number] for [amount] is still pending. Kindly make the payment by [due date] to avoid any late fees.\n\nThank you for your attention to this matter.\n\nBest regards,\n[Your Name]"
+    },
+    {
+        "prompt": "Write an introduction email to a new client.",
+        "email_body": "Subject: Welcome to [Company Name]\n\nDear [Client],\n\nWe are delighted to have you on board! At [Company Name], we are committed to providing the best service. Please do not hesitate to reach out if you have any questions or need assistance.\n\nBest regards,\n[Your Name]"
+    },
+    {
+        "prompt": "Compose a congratulatory email for a team member's achievement.",
+        "email_body": "Subject: Congratulations on Your Achievement!\n\nDear [Team Member],\n\nCongratulations on your outstanding achievement of [specific accomplishment]. Your hard work and dedication have truly paid off, and you are an inspiration to us all. Keep up the great work!\n\nWarm regards,\n[Your Name]"
+    },
+    {
+        "prompt": "Draft an email apologizing for a service delay.",
+        "email_body": "Subject: Our Apologies for the Delay\n\nDear [Customer],\n\nWe sincerely apologize for the delay in providing [specific service/product]. We understand the inconvenience this may have caused and are actively working to resolve the issue as quickly as possible. Thank you for your patience.\n\nSincerely,\n[Your Name]"
+    },
+    {
+        "prompt": "Create a feedback request email for a recent project.",
+        "email_body": "Subject: Your Feedback Matters to Us\n\nDear [Client],\n\nThank you for working with us on [specific project]. We would love to hear your feedback to help us improve. Please take a moment to complete this short survey: [survey link].\n\nWe greatly appreciate your input!\n\nBest regards,\n[Your Name]"
+    },
+    {
+        "prompt": "Send a professional follow-up email after a meeting.",
+        "email_body": "Subject: Thank You for the Meeting\n\nDear [Recipient],\n\nThank you for taking the time to meet with me today. ..."
+    },
+    {
+        "prompt": "Draft a formal invitation for a team-building activity.",
+        "email_body": "Subject: Invitation to Team-Building Activity\n\nDear Team,\n\nWe are excited to invite you to our upcoming team-building activity on ..."
+    },
+    {
+        "prompt": "Follow-up email regarding project deadlines",
+        "email_body": "Subject: Follow-up on Project Deadlines\n\nDear Team,\n\nI hope this message finds you well. ..."
+    },
+    {
+        "prompt": "Draft an invitation email for a quarterly review meeting",
+        "email_body": "Subject: Invitation to Quarterly Review Meeting\n\nDear Team,\n\nYou are cordially invited to our quarterly review meeting ..."
+    }
+]
