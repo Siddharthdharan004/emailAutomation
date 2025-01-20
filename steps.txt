@@ -1,0 +1,4 @@
+pip install faker numpy
+pip install transformers datasets torch numpy pandas
+pip uninstall torch torchvision torchaudio
+pip install transformers datasets numpy pandas scikit-learn
