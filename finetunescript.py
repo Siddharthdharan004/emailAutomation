@@ -1,67 +1,131 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM, Trainer, TrainingArguments
-from datasets import Dataset
 import json
-
-# Load your dataset
-def load_custom_dataset(file_path):
-    with open(file_path, 'r') as f:
-        data = json.load(f)
-    prompts = [entry['prompt'] for entry in data]
-    email_bodies = [entry['email_body'] for entry in data]
-    return {"prompt": prompts, "email_body": email_bodies}
-
-# Use the dataset path
-dataset_path = r"C:\Users\NP\Desktop\project1\improved_organizational_email_dataset.json"
-dataset = load_custom_dataset(dataset_path)
-
-# Prepare the tokenizer and model
-tokenizer = AutoTokenizer.from_pretrained("distilgpt2")
-model = AutoModelForCausalLM.from_pretrained("distilgpt2")
-
-# Add a padding token if it doesn't exist
-if tokenizer.pad_token is None:
-    tokenizer.add_special_tokens({'pad_token': tokenizer.eos_token})
-    model.resize_token_embeddings(len(tokenizer))  # Resize embeddings for the new token
-
-# Tokenize the dataset
-def preprocess_function(examples):
-    inputs = ["Prompt: " + prompt + "\nResponse: " + response for prompt, response in zip(examples['prompt'], examples['email_body'])]
-    model_inputs = tokenizer(inputs, truncation=True, padding="max_length", max_length=512)
-    # Use the input IDs as labels for causal language modeling
-    model_inputs["labels"] = model_inputs["input_ids"].copy()
-    return model_inputs
-
-# Convert dataset to Hugging Face Dataset
-raw_dataset = Dataset.from_dict(dataset)
-tokenized_dataset = raw_dataset.map(preprocess_function, batched=True)
-
-# Define training arguments
-training_args = TrainingArguments(
-    output_dir="./fine_tuned_email_model",
-    evaluation_strategy="no",  # Disable evaluation since no eval_dataset is provided
-    per_device_train_batch_size=4,
-    num_train_epochs=3,
-    save_steps=500,
-    save_total_limit=2,
-    logging_dir="./logs",
-    learning_rate=5e-5,
-    warmup_steps=500,
-    weight_decay=0.01,
-    fp16=True,  # Use mixed precision if supported
-    push_to_hub=False,  # Set to True if pushing to Hugging Face Hub
+import torch
+from transformers import (
+    GPT2Tokenizer, 
+    GPT2LMHeadModel, 
+    TrainingArguments, 
+    Trainer,
+    DataCollatorForLanguageModeling
 )
+from datasets import Dataset
+from sklearn.model_selection import train_test_split
 
-# Define the Trainer
-trainer = Trainer(
-    model=model,
-    args=training_args,
-    train_dataset=tokenized_dataset,
-    tokenizer=tokenizer,
-)
+def prepare_dataset(json_file_path):
+    """
+    Prepare the dataset from JSON file for fine-tuning
+    """
+    # Load dataset
+    with open(json_file_path, 'r', encoding='utf-8') as f:
+        raw_data = json.load(f)
+    
+    # Extract data entries
+    if isinstance(raw_data, dict) and 'data' in raw_data:
+        data = raw_data['data']
+    else:
+        data = raw_data
+    
+    # Format each example
+    formatted_data = []
+    for item in data:
+        # Combine prompt and email into a single text
+        text = f"PROMPT: {item['prompt']}\nEMAIL: {item['email_body']}"
+        formatted_data.append({"text": text})
+    
+    # Create dataset object
+    dataset = Dataset.from_list(formatted_data)
+    return dataset
 
-# Train the model
-trainer.train()
+def tokenize_data(examples, tokenizer):
+    """
+    Tokenize the texts with padding and truncation
+    """
+    return tokenizer(
+        examples["text"],
+        truncation=True,
+        padding='max_length',
+        max_length=512,
+        return_special_tokens_mask=True
+    )
 
-# Save the fine-tuned model
-trainer.save_model("./fine_tuned_email_model")
-tokenizer.save_pretrained("./fine_tuned_email_model")
+def train_model(dataset_path, output_dir="./email_model", batch_size=8):
+    """
+    Set up and run the fine-tuning process
+    """
+    # Initialize tokenizer and model
+    print("Loading tokenizer and model...")
+    tokenizer = GPT2Tokenizer.from_pretrained('distilgpt2')
+    model = GPT2LMHeadModel.from_pretrained('distilgpt2')
+    
+    # Prepare dataset
+    print("Preparing dataset...")
+    dataset = prepare_dataset(dataset_path)
+    
+    # Split dataset
+    train_testvalid = dataset.train_test_split(test_size=0.2, seed=42)
+    test_valid = train_testvalid['test'].train_test_split(test_size=0.5, seed=42)
+    
+    train_data = train_testvalid['train']
+    valid_data = test_valid['train']
+    test_data = test_valid['test']
+    
+    # Tokenize datasets
+    print("Tokenizing datasets...")
+    train_tokenized = train_data.map(
+        lambda x: tokenize_data(x, tokenizer),
+        batched=True,
+        remove_columns=train_data.column_names
+    )
+    valid_tokenized = valid_data.map(
+        lambda x: tokenize_data(x, tokenizer),
+        batched=True,
+        remove_columns=valid_data.column_names
+    )
+    
+    # Set up training arguments
+    training_args = TrainingArguments(
+        output_dir=output_dir,
+        num_train_epochs=3,
+        per_device_train_batch_size=batch_size,
+        per_device_eval_batch_size=batch_size,
+        evaluation_strategy="steps",
+        eval_steps=500,
+        logging_steps=100,
+        gradient_accumulation_steps=1,
+        weight_decay=0.01,
+        warmup_steps=500,
+        logging_dir='./logs',
+        save_steps=1000,
+        save_total_limit=2,
+    )
+    
+    # Create data collator
+    data_collator = DataCollatorForLanguageModeling(
+        tokenizer=tokenizer,
+        mlm=False
+    )
+    
+    # Initialize trainer
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        data_collator=data_collator,
+        train_dataset=train_tokenized,
+        eval_dataset=valid_tokenized,
+    )
+    
+    print("Starting training...")
+    trainer.train()
+    
+    print("Saving model...")
+    trainer.save_model("./final_model")
+    tokenizer.save_pretrained("./final_model")
+    
+    return trainer
+
+if __name__ == "__main__":
+    # Path to your dataset
+    dataset_path = "email_dataset.json"
+    
+    # Run training
+    trainer = train_model(dataset_path)
+    print("Training complete!")
