@@ -1,0 +1,6 @@
+from email_generator import save_dataset
+
+# Generate a 200MB dataset
+print("Starting dataset generation...")
+num_entries = save_dataset(filename="email_dataset.json", size_mb=200)
+print(f"Generated dataset with {num_entries} entries")
